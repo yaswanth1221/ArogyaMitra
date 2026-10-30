@@ -6,7 +6,7 @@ import { useAppData } from '../state/AppContext';
 import { logger } from '../utils/logger';
 import { downloadExcelReport } from '../utils/excelReport';
 
-type MetricTone = 'teal' | 'amber' | 'coral' | 'blue';
+type MetricTone = 'indigo' | 'violet' | 'mint' | 'coral';
 
 function MetricCard({
   label,
@@ -22,10 +22,10 @@ function MetricCard({
   icon: ReactNode;
 }) {
   const styles: Record<MetricTone, { icon: string; surface: string; accent: string; value: string }> = {
-    teal: { icon: 'bg-white/80 text-teal-800', surface: 'bg-gradient-to-br from-teal-50 to-emerald-100/80', accent: 'bg-teal-600', value: 'text-teal-950' },
-    amber: { icon: 'bg-white/80 text-amber-800', surface: 'bg-gradient-to-br from-amber-50 to-orange-100/80', accent: 'bg-amber-500', value: 'text-amber-950' },
-    coral: { icon: 'bg-white/80 text-rose-800', surface: 'bg-gradient-to-br from-rose-50 to-pink-100/80', accent: 'bg-rose-600', value: 'text-rose-950' },
-    blue: { icon: 'bg-white/80 text-sky-800', surface: 'bg-gradient-to-br from-sky-50 to-indigo-100/80', accent: 'bg-sky-600', value: 'text-sky-950' },
+    indigo: { icon: 'bg-white/80 text-indigo-800', surface: 'bg-gradient-to-br from-indigo-50 to-violet-100/80', accent: 'bg-indigo-600', value: 'text-indigo-950' },
+    violet: { icon: 'bg-white/80 text-violet-800', surface: 'bg-gradient-to-br from-violet-50 to-fuchsia-100/80', accent: 'bg-violet-600', value: 'text-violet-950' },
+    mint: { icon: 'bg-white/80 text-emerald-800', surface: 'bg-gradient-to-br from-emerald-50 to-teal-100/80', accent: 'bg-emerald-600', value: 'text-emerald-950' },
+    coral: { icon: 'bg-white/80 text-rose-800', surface: 'bg-gradient-to-br from-rose-50 to-orange-100/80', accent: 'bg-rose-600', value: 'text-rose-950' },
   };
   const style = styles[tone];
 
@@ -90,13 +90,13 @@ export function Dashboard() {
 
   return (
     <div className="space-y-5 pb-2">
-      <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-[#123c55] via-[#135c65] to-[#176d5c] p-5 text-white shadow-lg sm:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-cyan-100/10" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-24 right-20 -z-10 h-56 w-56 rounded-full bg-orange-300/10" aria-hidden="true" />
+      <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d2347] via-[#2f3d9d] to-[#1f7ea6] p-5 text-white shadow-lg sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-violet-200/10" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 right-20 -z-10 h-56 w-56 rounded-full bg-cyan-300/10" aria-hidden="true" />
         <div className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-teal-100/30 bg-teal-50/10 px-3 py-1 text-[11px] font-bold tracking-[0.16em] text-teal-100">
+              <span className="rounded-full border border-violet-200/30 bg-violet-50/10 px-3 py-1 text-[11px] font-bold tracking-[0.16em] text-violet-100">
                 AROGYAMITRA · FIELD TEAM
               </span>
               <DemoBadge>Synthetic demo records</DemoBadge>
@@ -118,7 +118,7 @@ export function Dashboard() {
                 Download complete Excel report
               </button>
             </div>
-            <p className="mt-2 text-xs text-cyan-100">Includes household and visit records, notes, assistant chat, settings, protocols, and safety examples. Chat may contain sensitive information.</p>
+            <p className="mt-2 text-xs text-cyan-100">Includes household and visit records, notes, assistant chat, settings, protocols, and safety examples. Chat may contain sensitive information stored locally.</p>
           </div>
           <div className="flex shrink-0 items-center gap-4 self-start rounded-2xl border border-white/15 bg-white/10 p-3 pr-5 backdrop-blur-sm sm:self-auto">
             <svg className="h-[88px] w-[88px] -rotate-90" viewBox="0 0 100 100" role="img" aria-label={`${completionPercent}% of today's visits completed`}>
@@ -128,7 +128,7 @@ export function Dashboard() {
                 cy="50"
                 r="42"
                 fill="none"
-                stroke="#fcd34d"
+                stroke="#fbbf24"
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={String(2 * Math.PI * 42)}
@@ -139,7 +139,7 @@ export function Dashboard() {
               </text>
             </svg>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-teal-100">Visits done</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-100">Visits done</p>
               <p className="mt-1 font-display text-2xl font-bold">{completedToday}<span className="ml-1 text-base font-medium text-cyan-100">/ {scheduledToday}</span></p>
               <p className="text-xs text-cyan-100">scheduled today</p>
             </div>
@@ -154,10 +154,10 @@ export function Dashboard() {
       )}
 
       <section aria-label="Visit summary" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Registered households" value={households.length} hint="In the local register" tone="teal" icon={<MetricIcon type="home" />} />
-        <MetricCard label="Due today" value={dueToday} hint="Pending visits scheduled today" tone="amber" icon={<MetricIcon type="calendar" />} />
+        <MetricCard label="Registered households" value={households.length} hint="In the local register" tone="indigo" icon={<MetricIcon type="home" />} />
+        <MetricCard label="Due today" value={dueToday} hint="Pending visits scheduled today" tone="violet" icon={<MetricIcon type="calendar" />} />
         <MetricCard label="Overdue visits" value={overdue} hint="Pending visits past their due date" tone="coral" icon={<MetricIcon type="clock" />} />
-        <MetricCard label="Completed today" value={completedToday} hint={`${highPriority} high-priority visits still pending`} tone="blue" icon={<MetricIcon type="check" />} />
+        <MetricCard label="Completed today" value={completedToday} hint={`${highPriority} high-priority visits still pending`} tone="mint" icon={<MetricIcon type="check" />} />
       </section>
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="top-visits">
@@ -200,13 +200,13 @@ export function Dashboard() {
       </section>
 
       <nav className="grid gap-3 sm:grid-cols-2" aria-label="Dashboard shortcuts">
-        <a href="#/assistant" className="group rounded-2xl border border-brand-200 bg-brand-50 p-4 transition hover:border-brand-500 hover:bg-brand-100">
-          <span className="text-xs font-bold uppercase tracking-wider text-brand-700">QUICK SUPPORT</span>
+        <a href="#/assistant" className="group rounded-2xl border border-indigo-200 bg-indigo-50 p-4 transition hover:border-indigo-500 hover:bg-indigo-100">
+          <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">QUICK SUPPORT</span>
           <span className="mt-1 block font-display text-lg font-bold text-brand-900">Ask the health assistant <span aria-hidden="true" className="transition group-hover:translate-x-1">→</span></span>
           <span className="mt-1 block text-sm text-slate-600">Find information from the local protocol library.</span>
         </a>
-        <a href="#/households" className="group rounded-2xl border border-amber-200 bg-amber-50 p-4 transition hover:border-amber-400 hover:bg-amber-100">
-          <span className="text-xs font-bold uppercase tracking-wider text-amber-800">HOUSEHOLD REGISTER</span>
+        <a href="#/households" className="group rounded-2xl border border-violet-200 bg-violet-50 p-4 transition hover:border-violet-400 hover:bg-violet-100">
+          <span className="text-xs font-bold uppercase tracking-wider text-violet-800">HOUSEHOLD REGISTER</span>
           <span className="mt-1 block font-display text-lg font-bold text-slate-900">Search or update records <span aria-hidden="true" className="transition group-hover:translate-x-1">→</span></span>
           <span className="mt-1 block text-sm text-slate-600">Open household details and visit history.</span>
         </a>
