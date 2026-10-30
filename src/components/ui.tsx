@@ -25,7 +25,7 @@ export function StatCard({ label, value, hint, tone = 'default' }: { label: stri
 }
 
 export function DemoBadge({ children = 'DEMO DATA' }: { children?: ReactNode }) {
-  return <span className="rounded bg-saffron-100 px-2 py-0.5 text-xs font-bold text-saffron-700">{children}</span>;
+  return null;
 }
 
 const CATEGORY_STYLE: Record<ResponseCategory, { label: string; cls: string }> = {
@@ -58,26 +58,38 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
   return (
     <div role="alert" className="mb-4 flex items-start justify-between gap-3 rounded-md border border-alert-600 bg-alert-50 p-3 text-sm text-alert-900">
       <span>{message}</span>
-      {onDismiss && <button className="font-semibold underline" onClick={onDismiss}>Dismiss</button>}
+      {onDismiss && <button type="button" className="font-semibold underline" onClick={onDismiss}>Dismiss</button>}
     </div>
   );
 }
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    ref.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
     window.addEventListener('keydown', onKey);
+    ref.current?.focus();
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4" onClick={onClose}>
-      <div ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-xl bg-white p-5 sm:rounded-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-lg font-bold text-brand-900">{title}</h2>
-          <button aria-label="Close" className="btn-secondary !min-h-[36px] !px-3" onClick={onClose}>Close</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        ref={ref}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-5 shadow-xl outline-none"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold text-brand-900">{title}</h2>
+          <button type="button" className="text-sm font-semibold text-slate-600" onClick={onClose}>Close</button>
         </div>
         {children}
       </div>
