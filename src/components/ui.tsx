@@ -24,7 +24,8 @@ export function StatCard({ label, value, hint, tone = 'default' }: { label: stri
   );
 }
 
-export function DemoBadge({ children = 'DEMO DATA' }: { children?: ReactNode }) {
+export function DemoBadge(props: { children?: ReactNode }) {
+  void props;
   return null;
 }
 
