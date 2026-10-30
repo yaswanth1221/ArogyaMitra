@@ -1,0 +1,12 @@
+{
+  "name": "ArogyaMitra - Health-Worker Companion (Demo)",
+  "short_name": "ArogyaMitra",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ee",
+  "theme_color": "#195c4d",
+  "icons": [
+    { "src": "arogyamitra-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,11 @@
+.env
+.env.local
+node_modules/
+dist/
+/FULL_CODE/data/
+/FULL_CODE/models/
+.venv/
+*.log
+.DS_Store
+*.db
+*.sqlite
