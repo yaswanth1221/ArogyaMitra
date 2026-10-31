@@ -22,23 +22,23 @@ function MetricCard({
   icon: ReactNode;
 }) {
   const styles: Record<MetricTone, { icon: string; surface: string; accent: string; value: string }> = {
-    indigo: { icon: 'bg-white/80 text-indigo-800', surface: 'bg-gradient-to-br from-indigo-50 to-violet-100/80', accent: 'bg-indigo-600', value: 'text-indigo-950' },
-    violet: { icon: 'bg-white/80 text-violet-800', surface: 'bg-gradient-to-br from-violet-50 to-fuchsia-100/80', accent: 'bg-violet-600', value: 'text-violet-950' },
-    mint: { icon: 'bg-white/80 text-emerald-800', surface: 'bg-gradient-to-br from-emerald-50 to-teal-100/80', accent: 'bg-emerald-600', value: 'text-emerald-950' },
-    coral: { icon: 'bg-white/80 text-rose-800', surface: 'bg-gradient-to-br from-rose-50 to-orange-100/80', accent: 'bg-rose-600', value: 'text-rose-950' },
+    indigo: { icon: 'bg-white text-indigo-700', surface: 'bg-gradient-to-br from-indigo-50 to-violet-100', accent: 'bg-indigo-600', value: 'text-indigo-900' },
+    violet: { icon: 'bg-white text-violet-700', surface: 'bg-gradient-to-br from-violet-50 to-fuchsia-100', accent: 'bg-violet-600', value: 'text-violet-900' },
+    mint: { icon: 'bg-white text-emerald-700', surface: 'bg-gradient-to-br from-emerald-50 to-teal-100', accent: 'bg-emerald-600', value: 'text-emerald-900' },
+    coral: { icon: 'bg-white text-rose-700', surface: 'bg-gradient-to-br from-rose-50 to-orange-100', accent: 'bg-rose-600', value: 'text-rose-900' },
   };
   const style = styles[tone];
 
   return (
-    <article className={`relative overflow-hidden rounded-2xl border border-white/80 ${style.surface} p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-5`}>
+    <article className={`relative overflow-hidden rounded-3xl border border-slate-200 ${style.surface} p-4 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:p-5`}>
       <span className={`absolute inset-x-0 top-0 h-1 ${style.accent}`} aria-hidden="true" />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-700">{label}</p>
+          <p className="text-sm font-semibold text-slate-600">{label}</p>
           <p className={`mt-2 font-display text-4xl font-bold tracking-tight ${style.value}`}>{value}</p>
           <p className="mt-1 text-xs text-slate-500">{hint}</p>
         </div>
-        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${style.icon}`} aria-hidden="true">
+        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${style.icon}`} aria-hidden="true">
           {icon}
         </span>
       </div>
@@ -78,6 +78,25 @@ export function Dashboard() {
     year: 'numeric',
   }).format(new Date(`${today}T00:00:00`));
 
+  const fieldPulse = useMemo(() => {
+    const urgent = plan.filter((p) => p.household.priority === 'High').slice(0, 3);
+    const villages = Array.from(
+      plan.reduce((map, item) => {
+        const location = item.household.village;
+        const current = map.get(location) ?? { name: location, count: 0, overdue: 0 };
+        current.count += 1;
+        if (item.overdueDays > 0) current.overdue += 1;
+        map.set(location, current);
+        return map;
+      }, new Map<string, { name: string; count: number; overdue: number }>()),
+    )
+      .map(([, value]) => value)
+      .sort((a, b) => b.overdue - a.overdue)
+      .slice(0, 3);
+
+    return { urgent, villages };
+  }, [plan]);
+
   const exportReport = () => {
     try {
       downloadExcelReport(households, plan, notes, today, chat, weights);
@@ -89,62 +108,111 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-5 pb-2">
-      <section className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d2347] via-[#2f3d9d] to-[#1f7ea6] p-5 text-white shadow-lg sm:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-violet-200/10" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-24 right-20 -z-10 h-56 w-56 rounded-full bg-cyan-300/10" aria-hidden="true" />
-        <div className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
+    <div className="space-y-6 pb-2">
+      <section className="grid gap-5 xl:grid-cols-[1.5fr_0.9fr]">
+        <div className="relative isolate overflow-hidden rounded-[28px] bg-gradient-to-br from-[#18294e] via-[#233d9a] to-[#1fa0c8] p-5 text-white shadow-soft sm:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-20 -z-10 h-72 w-72 rounded-full border-[42px] border-cyan-200/10" aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-20 right-10 -z-10 h-64 w-64 rounded-full bg-emerald-300/10" aria-hidden="true" />
+
+          <div className="relative flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-violet-200/30 bg-violet-50/10 px-3 py-1 text-[11px] font-bold tracking-[0.16em] text-violet-100">
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold tracking-[0.16em] text-cyan-50">
                 AROGYAMITRA · FIELD TEAM
               </span>
               <DemoBadge>Synthetic demo records</DemoBadge>
             </div>
-            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">Today at a glance</h1>
-            <p className="mt-2 text-sm text-cyan-50 sm:text-base">{displayDate}</p>
-            <div className="mt-6 flex flex-wrap gap-3">
+
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-xl">
+                <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Today at a glance</h1>
+                <p className="mt-2 text-sm text-cyan-50 sm:text-base">{displayDate}</p>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
+                <svg className="h-[90px] w-[90px] -rotate-90" viewBox="0 0 100 100" role="img" aria-label={`${completionPercent}% of today's visits completed`}>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    fill="none"
+                    stroke="#facc15"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={String(2 * Math.PI * 42)}
+                    strokeDashoffset={String(2 * Math.PI * 42 * (1 - completionPercent / 100))}
+                  />
+                  <text x="50" y="52" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="21" fontWeight="700" className="rotate-90" style={{ transformOrigin: '50% 50%' }}>
+                    {completionPercent}%
+                  </text>
+                </svg>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-100">Visits done</p>
+                  <p className="mt-1 font-display text-2xl font-bold">{completedToday}<span className="ml-1 text-base font-medium text-cyan-100">/ {scheduledToday}</span></p>
+                  <p className="text-xs text-cyan-100">scheduled today</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
               <a href="#/planner" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-300 px-4 py-2 text-sm font-bold text-slate-900 shadow-sm transition hover:bg-amber-200">
                 Open today’s visit plan
               </a>
-              <a href="#/households" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/35 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20">
+              <a href="#/households" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15">
                 Find a household
               </a>
-              <button type="button" onClick={exportReport} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/35 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20">
+              <button type="button" onClick={exportReport} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15">
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <path d="m7 10 5 5 5-5M12 15V3" />
                 </svg>
-                Download complete Excel report
+                Download report
               </button>
-            </div>
-            <p className="mt-2 text-xs text-cyan-100">Includes household and visit records, notes, assistant chat, settings, protocols, and safety examples. Chat may contain sensitive information stored locally.</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-4 self-start rounded-2xl border border-white/15 bg-white/10 p-3 pr-5 backdrop-blur-sm sm:self-auto">
-            <svg className="h-[88px] w-[88px] -rotate-90" viewBox="0 0 100 100" role="img" aria-label={`${completionPercent}% of today's visits completed`}>
-              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                fill="none"
-                stroke="#fbbf24"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={String(2 * Math.PI * 42)}
-                strokeDashoffset={String(2 * Math.PI * 42 * (1 - completionPercent / 100))}
-              />
-              <text x="50" y="52" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="21" fontWeight="700" className="rotate-90" style={{ transformOrigin: '50% 50%' }}>
-                {completionPercent}%
-              </text>
-            </svg>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-violet-100">Visits done</p>
-              <p className="mt-1 font-display text-2xl font-bold">{completedToday}<span className="ml-1 text-base font-medium text-cyan-100">/ {scheduledToday}</span></p>
-              <p className="text-xs text-cyan-100">scheduled today</p>
             </div>
           </div>
         </div>
+
+        <aside className="section-shell bg-gradient-to-br from-slate-50 to-white p-5">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-700">Field Pulse</p>
+              <h2 className="mt-1 font-display text-2xl font-bold text-slate-900">Risk overview</h2>
+            </div>
+            <span className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-700">Live</span>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {fieldPulse.urgent.length > 0 ? (
+              fieldPulse.urgent.map((item, index) => (
+                <div key={item.household.id} className="rounded-2xl border border-rose-100 bg-rose-50/60 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-bold text-slate-900">{item.household.village}</p>
+                    <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white">{index + 1}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-600">{item.household.visitType} · {item.household.id}</p>
+                  <div className="mt-2 flex items-center justify-between text-xs font-semibold">
+                    <span className="text-rose-700">High priority</span>
+                    <span className="text-slate-500">{item.overdueDays}d overdue</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">No urgent household alerts today.</div>
+            )}
+          </div>
+
+          <div className="mt-6 border-t border-slate-200 pt-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Village watch</p>
+            <ul className="mt-3 space-y-2">
+              {fieldPulse.villages.map((village) => (
+                <li key={village.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 text-sm">
+                  <span className="font-semibold text-slate-700">{village.name}</span>
+                  <span className="text-slate-500">{village.overdue} overdue</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
       </section>
 
       {reportMessage && (
@@ -156,14 +224,14 @@ export function Dashboard() {
       <section aria-label="Visit summary" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Registered households" value={households.length} hint="In the local register" tone="indigo" icon={<MetricIcon type="home" />} />
         <MetricCard label="Due today" value={dueToday} hint="Pending visits scheduled today" tone="violet" icon={<MetricIcon type="calendar" />} />
-        <MetricCard label="Overdue visits" value={overdue} hint="Pending visits past their due date" tone="coral" icon={<MetricIcon type="clock" />} />
-        <MetricCard label="Completed today" value={completedToday} hint={`${highPriority} high-priority visits still pending`} tone="mint" icon={<MetricIcon type="check" />} />
+        <MetricCard label="Overdue visits" value={overdue} hint="Past due and requiring attention" tone="coral" icon={<MetricIcon type="clock" />} />
+        <MetricCard label="Completed today" value={completedToday} hint={`${highPriority} high-priority cases still pending`} tone="mint" icon={<MetricIcon type="check" />} />
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="top-visits">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
+      <section className="section-shell" aria-labelledby="top-visits">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Prioritized for follow-up</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-700">Prioritized for follow-up</p>
             <h2 id="top-visits" className="mt-1 font-display text-xl font-bold text-slate-900">Next visits to make</h2>
           </div>
           <a href="#/planner" className="text-sm font-semibold text-brand-800 underline decoration-brand-300 underline-offset-4 hover:text-brand-900">
@@ -175,11 +243,11 @@ export function Dashboard() {
             <EmptyState title="No pending visits" hint="Add a household or reset demo data in Settings." />
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-200">
             {plan.slice(0, 6).map((p, index) => (
               <li key={p.household.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-5">
                 <div className="flex min-w-0 items-start gap-3">
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${index === 0 ? 'bg-rose-100 text-rose-800' : 'bg-brand-50 text-brand-800'}`}>
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${index === 0 ? 'bg-rose-100 text-rose-700' : 'bg-brand-50 text-brand-700'}`}>
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <div className="min-w-0">
@@ -200,13 +268,14 @@ export function Dashboard() {
       </section>
 
       <nav className="grid gap-3 sm:grid-cols-2" aria-label="Dashboard shortcuts">
-        <a href="#/assistant" className="group rounded-2xl border border-indigo-200 bg-indigo-50 p-4 transition hover:border-indigo-500 hover:bg-indigo-100">
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">QUICK SUPPORT</span>
+        <a href="#/assistant" className="group rounded-3xl border border-indigo-200 bg-indigo-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-100">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-indigo-700">Quick support</span>
           <span className="mt-1 block font-display text-lg font-bold text-brand-900">Ask the health assistant <span aria-hidden="true" className="transition group-hover:translate-x-1">→</span></span>
           <span className="mt-1 block text-sm text-slate-600">Find information from the local protocol library.</span>
         </a>
-        <a href="#/households" className="group rounded-2xl border border-violet-200 bg-violet-50 p-4 transition hover:border-violet-400 hover:bg-violet-100">
-          <span className="text-xs font-bold uppercase tracking-wider text-violet-800">HOUSEHOLD REGISTER</span>
+
+        <a href="#/households" className="group rounded-3xl border border-violet-200 bg-violet-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-100">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-700">Household register</span>
           <span className="mt-1 block font-display text-lg font-bold text-slate-900">Search or update records <span aria-hidden="true" className="transition group-hover:translate-x-1">→</span></span>
           <span className="mt-1 block text-sm text-slate-600">Open household details and visit history.</span>
         </a>
