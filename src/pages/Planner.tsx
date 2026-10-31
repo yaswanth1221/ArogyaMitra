@@ -121,8 +121,16 @@ export function Planner() {
         <Modal title={`Complete ${target.household.id}`} onClose={() => setTarget(null)}>
           {error && <ErrorBanner message={error} />}
           <p className="mb-2 text-sm">{target.household.visitType} · {target.household.village}</p>
-          <label><span className="label">Visit note (optional, synthetic data only)</span>
-            <textarea className="field min-h-[110px]" maxLength={APP_CONFIG.limits.noteChars} value={note} onChange={(e) => setNote(e.target.value)} />
+          <label>
+            <span className="label">Visit note (optional, synthetic data only)</span>
+            <input
+              className="field"
+              type="text"
+              value={note}
+              maxLength={APP_CONFIG.limits.noteChars}
+              placeholder="Add a quick note"
+              onChange={(e) => setNote(e.target.value)}
+            />
           </label>
           <button className="btn-primary mt-3 w-full" onClick={() => void confirm()}>Save and mark completed</button>
         </Modal>
