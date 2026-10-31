@@ -24,8 +24,8 @@ function VisitRow({ visit, onComplete }: { visit: PlannedVisit; onComplete: () =
         </div>
         <div className="flex items-center gap-2">
           <PriorityBadge priority={h.priority} />
-          <button className="text-xs font-semibold underline" aria-expanded={open} onClick={() => setOpen(!open)}>Score {visit.score}</button>
-          <button className="btn-primary !min-h-[40px]" onClick={onComplete}>Mark completed</button>
+          <button type="button" className="text-xs font-semibold underline" aria-expanded={open} onClick={() => setOpen(!open)}>Score {visit.score}</button>
+          <button type="button" className="btn-primary !min-h-[40px]" onClick={onComplete}>Mark completed</button>
         </div>
       </div>
       {open && (
@@ -45,6 +45,12 @@ export function Planner() {
   const [error, setError] = useState<string | null>(null);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
+
+  const closeTarget = () => {
+    setTarget(null);
+    setNote('');
+    setError(null);
+  };
 
   const plan = useMemo(() => planVisits(households, today, weights), [households, weights, today]);
   const recentNotes = useMemo(() => [...notes].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 8), [notes]);
@@ -67,7 +73,7 @@ export function Planner() {
     }
     try {
       await completeVisit(target.household.id, trimmed);
-      setTarget(null); setNote(''); setError(null);
+      closeTarget();
     } catch {
       setError('Could not save the visit locally.');
     }
@@ -78,7 +84,7 @@ export function Planner() {
       <PageHeader
         title="Daily Visit Planner"
         subtitle={`Plan for ${today}. Completed visits and notes are saved on this device.`}
-        action={<button className="btn-secondary" onClick={exportPlan}>Download Excel</button>}
+        action={<button type="button" className="btn-secondary" onClick={exportPlan}>Download Excel</button>}
       />
       {exportMessage && <p className="mb-3 text-sm font-semibold text-brand-800" role="status" aria-live="polite">{exportMessage}</p>}
       <details className="card mb-5">
@@ -98,11 +104,11 @@ export function Planner() {
             <h2 id={`bucket-${b}`} className="font-display text-lg font-bold text-brand-900">{b}. {BUCKET_LABELS[b]} <span className="text-sm font-normal text-slate-600">({items.length})</span></h2>
             {items.length === 0 ? <p className="mt-2 text-sm text-slate-600">Nothing in this group.</p> : (
               <ul className="divide-y divide-slate-200">
-                {shown.map((v) => <VisitRow key={v.household.id} visit={v} onComplete={() => { setTarget(v); setError(null); }} />)}
+                {shown.map((v) => <VisitRow key={v.household.id} visit={v} onComplete={() => { setTarget(v); setError(null); setNote(''); }} />)}
               </ul>
             )}
             {b === 4 && items.length > UPCOMING_LIMIT && (
-              <button className="btn-secondary mt-2" onClick={() => setShowAllUpcoming(!showAllUpcoming)}>{showAllUpcoming ? 'Show fewer' : `Show all ${items.length}`}</button>
+              <button type="button" className="btn-secondary mt-2" onClick={() => setShowAllUpcoming(!showAllUpcoming)}>{showAllUpcoming ? 'Show fewer' : `Show all ${items.length}`}</button>
             )}
           </section>
         );
@@ -118,7 +124,7 @@ export function Planner() {
       </section>
 
       {target && (
-        <Modal title={`Complete ${target.household.id}`} onClose={() => setTarget(null)}>
+        <Modal title={`Complete ${target.household.id}`} onClose={closeTarget}>
           {error && <ErrorBanner message={error} />}
           <p className="mb-2 text-sm">{target.household.visitType} · {target.household.village}</p>
           <label>
@@ -132,7 +138,7 @@ export function Planner() {
               onChange={(e) => setNote(e.target.value)}
             />
           </label>
-          <button className="btn-primary mt-3 w-full" onClick={() => void confirm()}>Save and mark completed</button>
+          <button type="button" className="btn-primary mt-3 w-full" onClick={() => void confirm()}>Save and mark completed</button>
         </Modal>
       )}
     </>
