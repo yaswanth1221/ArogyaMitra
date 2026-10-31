@@ -86,12 +86,21 @@ export function Layout({ route, children }: { route: RoutePath; children: ReactN
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 p-4 lg:p-6">{children}</main>
+        <main
+          className="mx-auto w-full max-w-6xl flex-1 p-4 lg:p-6"
+          style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' }}
+        >
+          {children}
+        </main>
       </div>
 
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 bg-slate-900/35 lg:hidden" onClick={() => setMobileMenuOpen(false)}>
-          <div className="absolute inset-x-4 bottom-20 rounded-3xl border border-slate-200 bg-white p-3 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+          <div
+            className="absolute inset-x-4 rounded-3xl border border-slate-200 bg-white p-3 shadow-2xl"
+            style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' }}
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="mb-3 flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
               <span className="text-sm font-bold uppercase tracking-[0.08em] text-slate-500">Sections</span>
               <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-700">
@@ -115,13 +124,17 @@ export function Layout({ route, children }: { route: RoutePath; children: ReactN
         </div>
       )}
 
-      <nav aria-label="Mobile" className="fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t border-slate-200 bg-white/90 backdrop-blur-lg lg:hidden">
+      <nav
+        aria-label="Mobile"
+        className="fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t border-slate-200 bg-white/90 backdrop-blur-lg lg:hidden"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}
+      >
         {ROUTES.map((r) => (
           <a
             key={r.path}
             href={`#/${r.path}`}
             aria-current={route === r.path ? 'page' : undefined}
-            className={`flex min-h-[56px] min-w-[84px] flex-1 items-center justify-center px-2 text-center text-[11px] font-bold ${route === r.path ? 'border-t-4 border-brand-700 bg-brand-50 text-brand-800' : 'text-slate-600'}`}
+            className={`flex min-h-[56px] min-w-[84px] flex-1 items-center justify-center px-2 text-center text-[11px] font-bold ${route === r.path ? 'border-t-4 border-brand-700 bg-brand-50 text-brand-900' : 'text-slate-600'}`}
           >
             {r.label}
           </a>
